@@ -1,23 +1,57 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
+import SearchIcon from "./search.svg";
+import MovieCard from "./MovieCard";
+
+const API_URL = "http://www.omdbapi.com?apikey=a62cd174";
+
+const movie1 = {
+  Title: "Amazing Spiderman Syndrome",
+  Year: "2012",
+  imdbID: "tt2586634",
+  Type: "movie",
+  Poster: "N/A",
+};
 
 const App = () => {
-  const [counter, setCounter] = useState(0); // THIS IS A HOOK
-
+  const [movies, setMovies] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const searchMovies = async (title) => {
+    const response = await fetch(`${API_URL}&s=${title}`);
+    const data = await response.json();
+    console.log(data.Search);
+    setMovies(data.Search);
+  };
   useEffect(() => {
-    console.log("useEffect called");
-    document.title = `You clicked ${counter} times`;
-  }, [counter]);
-
+    searchMovies("spiderman");
+  }, []);
   return (
-    <div className="App">
-      <button onClick={() => setCounter((prevCount) => prevCount - 1)}>
-        -
-      </button>
-      <h1>{counter}</h1>
-      <button onClick={() => setCounter((prevCount) => prevCount + 1)}>
-        +
-      </button>
+    <div className="app">
+      <h1 className="title">Movie Search</h1>
+
+      <div className="search">
+        <input
+          placeholder="Search for movies"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <img
+          src={SearchIcon}
+          alt="Search icon"
+          onClick={() => searchMovies(searchTerm)}
+        />
+      </div>
+      {movies?.length > 0 ? (
+        <div className="container">
+          {movies.map((movie) => (
+            <MovieCard movie1={movie} />
+          ))}
+        </div>
+      ) : (
+        <div className="empty">
+          <h2>No movies found!</h2>
+        </div>
+      )}
     </div>
   );
 };
